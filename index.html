@@ -7,24 +7,52 @@
 <body>
   <h2>Confirming your account...</h2>
   <script>
-    const supabase = supabase.createClient(
-      'https://rhrazxvubshmdstytyhl.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJocmF6eHZ1YnNobWRzdHl0eWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3NTU0NTgsImV4cCI6MjA2NTMzMTQ1OH0.VAYZyQJkipN2OCeo2yvrZ_pcQCBZL2mdbKyym6yTNQ8'
+    const supabaseClient = supabase.createClient(
+      'https://rhrazxvubshwemdeefeastytyhl.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJocmF6eHZ1YnNobWRzdHl0eWhsNTMzMTQ1OH0.VAYZyQJkipN2OCeo2yvrZ_pcQCBZL2mdbKyym6yTNQ8'
     );
 
-    // Completes the session using token from URL
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (error) {
-        document.body.innerHTML = `<h2>Error confirming: ${error.message}</h2>`;
-      } else {
-        document.body.innerHTML = `<h2>✅ Email confirmed! Redirecting...</h2>`;
-        // Redirect after confirmation
-        setTimeout(() => {
-          window.location.href = '/dashboard.html';
-        }, 2000);
+    // Extract tokens from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    const type = urlParams.get('type');
+
+    async function confirmEmail() {
+      try {
+        if (type === 'signup' && accessToken && refreshToken) {
+          // Set the session with the tokens from the email link
+          const { data, error } = await supabaseClient.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          document.body.innerHTML = `<h2>✅ Email confirmed successfully!</h2><p>Redirecting to dashboard...</p>`;
+          
+          // Redirect after confirmation
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 2000);
+          
+        } else {
+          throw new Error('Invalid confirmation link or missing parameters');
+        }
+      } catch (error) {
+        console.error('Confirmation error:', error);
+        document.body.innerHTML = `
+          <h2>❌ Error confirming email</h2>
+          <p>${error.message}</p>
+          <p><a href="/login.html">Return to login</a></p>
+        `;
       }
-    });
+    }
+
+    // Run confirmation when page loads
+    confirmEmail();
   </script>
 </body>
 </html>
-
