@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Confirming...</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <h2>Confirming your account...</h2>
+  <script>
+    const supabase = supabase.createClient(
+      'https://rhrazxvubshmdstytyhl.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJocmF6eHZ1YnNobWRzdHl0eWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3NTU0NTgsImV4cCI6MjA2NTMzMTQ1OH0.VAYZyQJkipN2OCeo2yvrZ_pcQCBZL2mdbKyym6yTNQ8'
+    );
+
+    // Completes the session using token from URL
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        document.body.innerHTML = `<h2>Error confirming: ${error.message}</h2>`;
+      } else {
+        document.body.innerHTML = `<h2>✅ Email confirmed! Redirecting...</h2>`;
+        // Redirect after confirmation
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 2000);
+      }
+    });
+  </script>
+</body>
+</html>
+
